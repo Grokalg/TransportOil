@@ -1,6 +1,7 @@
 ﻿#include <iostream>
 #include <fstream>
 #include <string>
+#include <cctype>   // для функции isdigit
 
 using namespace std;
 
@@ -24,56 +25,138 @@ struct cs
 	cs() {}
 };
 
-void CreateTube(tube& new_tube)
+bool IsNumber(string str)
+{
+	int i;
+	for (i = 0; i < str.length(); i++)
+	{
+		if (!isdigit(str[i]))
+		{
+			return false;
+			break;
+		}
+	}
+}
+
+int CreateTube(tube& new_tube)
 {
 	if (new_tube.created == true)
 	{
+		string str;
 		int user_choice;
 		cout << "Вы точно хотите перезаписать трубу?\n";
 		cout << "Выберете: <0>, если не хотите перезаписывать трубу,\n";
 		cout << "          <1>, если хотите перезаписать\n";
-		cin >> user_choice;
-		if (user_choice == 1)
+		cin >> str;
+		if (IsNumber(str))
 		{
-			double length, diameter;
-			cout << "Введите длину: ";
-			cin >> length;
-			if (length <= 0)
+			user_choice = stoi(str);
+			switch (user_choice)
 			{
-				cout << "Длина трубы не может быть отрицательной или 0. Введите данные повторно:\n";
-				cin >> length;
+			case 1:
+				float diameter, length;
+				while (true)
+				{
+					cout << "Введите длину: ";
+					cin >> str;
+					if (IsNumber(str))
+					{
+						length = stof(str);
+						if (length <= 0)
+						{
+							cout << "Длина трубы не может быть отрицательной или 0. Введите данные повторно.\n";
+							continue;
+						}
+					}
+					else
+					{
+						cout << "Введенные данные не корректны.\n";
+						continue;
+					}
+					break;
+				}
+				while (true)
+				{
+					cout << "Введите диаметр: ";
+					cin >> str;
+					if (IsNumber(str))
+					{
+						diameter = stof(str);
+						if (diameter == 0)
+						{
+							cout << "Диаметр трубы не может составлять 0 м. Введите данные повторно:\n";
+							continue;
+						}
+					}
+					else
+					{
+						cout << "Введенные данные не корректны.\n";
+						continue;
+					}
+					break;
+				}				
+				cout << "Труба исправна\n\n";
+				new_tube.length = length;
+				new_tube.diameter = diameter;
+				new_tube.condition = "Труба исправна";
+				new_tube.saved = false;
+				new_tube.created = true;
+				return 0;
+			case 0:
+				return 0;
+			default:
+				cout << "Введенные данные не корректны.\n";
+				break;
 			}
-			cout << "Введите диаметр: ";
-			cin >> diameter;
-			if (diameter == 0)
-			{
-				cout << "Диаметр трубы не может составлять 0 м. Введите данные повторно:\n";
-				cin >> diameter;
-			}
-			cout << "Труба исправна\n\n";
-			new_tube.length = length;
-			new_tube.diameter = diameter;
-			new_tube.condition = "Труба исправна";
-			new_tube.saved = false;
-			new_tube.created = true;
+		}
+		else
+		{
+			cout << "Введенные данные не корректны.\n";
 		}
 	}
 	else
 	{
-		double length, diameter;
-		cout << "Введите длину: ";
-		cin >> length;
-		if (length <= 0)
+		string str;
+		float diameter, length;
+		while (true)
 		{
-			cout << "Длина трубы не может быть отрицательной или 0. Введите данные повторно:\n";
-			cin >> length;
+			cout << "Введите длину: ";
+			cin >> str;
+			if (IsNumber(str))
+			{
+				length = stof(str);
+				if (length <= 0)
+				{
+					cout << "Длина трубы не может быть отрицательной или 0. Введите данные повторно.\n";
+					continue;
+				}
+			}
+			else
+			{
+				cout << "Введенные данные не корректны.\n";
+				continue;
+			}
+			break;
 		}
-		cout << "Введите диаметр: ";
-		cin >> diameter;
-		if (diameter == 0)
+		while (true)
 		{
-			cout << "Диаметр трубы не может составлять 0 м. Введите данные повторно:\n";
-			cin >> diameter;
+			cout << "Введите диаметр: ";
+			cin >> str;
+			if (IsNumber(str))
+			{
+				diameter = stof(str);
+				if (diameter == 0)
+				{
+					cout << "Диаметр трубы не может составлять 0 м. Введите данные повторно:\n";
+					continue;
+				}
+			}
+			else
+			{
+				cout << "Введенные данные не корректны.\n";
+				continue;
+			}
+			break;
 		}
 		cout << "Труба исправна\n\n";
 		new_tube.length = length;
@@ -81,58 +164,173 @@ void CreateTube(tube& new_tube)
 		new_tube.condition = "Труба исправна";
 		new_tube.saved = false;
 		new_tube.created = true;
+		return 0;
 	}
 }
 
-void CreateStation(cs& new_cs)
+int CreateStation(cs& new_cs)
 {
 	if (new_cs.created == true)
 	{
+		string str;
 		int user_choice;
 		cout << "Вы точно хотите перезаписать КС?\n";
 		cout << "Выберете: <0>, если не хотите перезаписывать трубу,\n";
 		cout << "          <1>, если хотите перезаписать\n";
-		cin >> user_choice;
-		if (user_choice == 1)
+		cin >> str;
+		if (IsNumber(str))
 		{
-			int rooms, active_rooms, efficiency;
-			cout << "Укажите количество цехов: ";
-			cin >> rooms;
-			cout << "Укажите количество работающих цехов: ";
-			cin >> active_rooms;
-			if (active_rooms > rooms)
+			user_choice = stoi(str);
+			switch (user_choice)
 			{
-				cout << "Колличество работающих цехов не может превыщать колличество всего цехов на КС. Введите число работающих цехов:\n";
-				cin >> active_rooms;
+			case 1:
+				int rooms, active_rooms, efficiency;
+				while (true)
+				{
+					cout << "Укажите количество цехов: ";
+					cin >> str;
+					if (IsNumber(str))
+					{
+						rooms = stoi(str);
+						if (rooms <= 0)
+						{
+							cout << "Колличество цехов не может быть отрицательной или 0. Введите данные повторно.\n";
+							continue;
+						}
+					}
+					else
+					{
+						cout << "Введенные данные не корректны.\n";
+						continue;
+					}
+					break;
+				}
+				while (true)
+				{
+					cout << "Укажите количество работающих цехов: ";
+					cin >> str;
+					if (IsNumber(str))
+					{
+						active_rooms = stoi(str);
+						if (active_rooms > rooms)
+						{
+							cout << "Колличество работающих цехов не может превыщать колличество всего цехов на КС. Введите число работающих цехов:\n";
+							continue;
+						}
+					}
+					else
+					{
+						cout << "Введенные данные не корректны.\n";
+						continue;
+					}
+					break;
+				}
+				while (true)
+				{
+					cout << "Введите значение эффективности (от 1 до 5): ";
+					cin >> str;
+					if (IsNumber(str))
+					{
+						efficiency = stoi(str);
+						if (efficiency <= 0 or efficiency > 5)
+						{
+							cout << "Введенные данные не корректны. Эффективность - число от 1 до 5.\n";
+							cout << "Введите число работающих цехов : \n";
+							continue;
+						}
+					}
+					else
+					{
+						cout << "Введенные данные не корректны.\n";
+						continue;
+					}
+					break;
+				}
+				new_cs.rooms = rooms;
+				new_cs.active_rooms = active_rooms;
+				new_cs.efficiency = efficiency;
+				new_cs.saved = false;
+				new_cs.created = true;
+				return 0;
+			case 0:
+				return 0;
+			default:
+				cout << "Введенные данные не корректны.\n";
+				break;
 			}
-			cout << "Введите значение эффективности: ";
-			cin >> efficiency;
-			new_cs.rooms = rooms;
-			new_cs.active_rooms = active_rooms;
-			new_cs.efficiency = efficiency;
-			new_cs.saved = false;
-			new_cs.created = true;
 		}
 	}
 	else
 	{
+		string str;
 		int rooms, active_rooms, efficiency;
-		cout << "Укажите количество цехов: ";
-		cin >> rooms;
-		cout << "Укажите количество работающих цехов: ";
-		cin >> active_rooms;
-		if (active_rooms > rooms)
+		while (true)
 		{
-			cout << "Колличество работающих цехов не может превыщать колличество всего цехов на КС. Введите число работающих цехов:\n";
-			cin >> active_rooms;
+			cout << "Укажите количество цехов: ";
+			cin >> str;
+			if (IsNumber(str))
+			{
+				rooms = stoi(str);
+				if (rooms <= 0)
+				{
+					cout << "Колличество цехов не может быть отрицательной или 0. Введите данные повторно.\n";
+					continue;
+				}
+			}
+			else
+			{
+				cout << "Введенные данные не корректны.\n";
+				continue;
+			}
+			break;
 		}
-		cout << "Введите значение эффективности: ";
-		cin >> efficiency;
+		while (true)
+		{
+			cout << "Укажите количество работающих цехов: ";
+			cin >> str;
+			if (IsNumber(str))
+			{
+				active_rooms = stoi(str);
+				if (active_rooms > rooms)
+				{
+					cout << "Колличество работающих цехов не может превыщать колличество всего цехов на КС. Введите число работающих цехов:\n";
+					continue;
+				}
+			}
+			else
+			{
+				cout << "Введенные данные не корректны.\n";
+				continue;
+			}
+			break;
+		}
+		while (true)
+		{
+			cout << "Введите значение эффективности (от 1 до 5): ";
+			cin >> str;
+			if (IsNumber(str))
+			{
+				efficiency = stoi(str);
+				if (efficiency <= 0 or efficiency > 5)
+				{
+					cout << "Введенные данные не корректны. Эффективность - число от 1 до 5.\n";
+					cout << "Введите число работающих цехов : \n";
+					continue;
+				}
+			}
+			else
+			{
+				cout << "Введенные данные не корректны.\n";
+				continue;
+			}
+			break;
+		}
 		new_cs.rooms = rooms;
 		new_cs.active_rooms = active_rooms;
 		new_cs.efficiency = efficiency;
 		new_cs.saved = false;
 		new_cs.created = true;
+		return 0;
 	}
 }
 
@@ -162,28 +360,42 @@ void ViewAllObjects(tube& new_tube, cs& new_cs)
 	}
 }
 
-void EditTube(tube& new_tube)
+int EditTube(tube& new_tube)
 {
 	if (new_tube.created == true)
 	{
-		cout << "------------ Редактирование Трубы ------------\n";
 		int user_choice;
+		string str;
 		cout << "Введите значение состояния:\n";
 		cout << "<0> - Труба исправна  <1> - Труба в ремонте\n";
-		cin >> user_choice;
-		if (user_choice == 0)
+		cin >> str;
+		if (IsNumber(str))
 		{
-			new_tube.condition = "Труба исправна";
+			user_choice = stoi(str);
+			switch (user_choice)
+			{
+			case 1:
+				new_tube.condition = "Труба в ремонте";
+				new_tube.saved = false;
+				return 0;
+			case 0:
+				new_tube.condition = "Труба исправна";
+				new_tube.saved = false;
+				return 0;
+			default:
+				cout << "Введенные данные не корректны.\n";
+				break;
+			}
 		}
 		else
 		{
-			new_tube.condition = "Труба в ремонте";
+			cout << "Введенные данные не корректны.\n";
 		}
-		new_tube.saved = false;
 	}
 	else
 	{
 		cout << "Труба ещё не создана.\n";
+		return 0;
 	}
 }
 
@@ -191,40 +403,54 @@ void EditStation(cs& new_cs)
 {
 	if (new_cs.created == true)
 	{
+		string str;
 		int user_choice = 3;
 		cout << "------------ Редактирование КС ------------\n";
 		cout << "Колличество работающих цехов на данный момент: " << new_cs.active_rooms << endl;
 		cout << "<0> - Убрать активный цех, <1> - Добавить активный цех, <2> - Закончить редактирование\n";
 		for (;;)
 		{
-			cin >> user_choice;
-			if (user_choice == 0)
+			cin >> str;
+			if (IsNumber(str) and stoi(str)>=0 and stoi(str)<=2)
 			{
-				new_cs.active_rooms--;
+				user_choice = stoi(str);
+				if (user_choice == 0)
+				{
+					new_cs.active_rooms--;
+					cout << "Колл-во работающих цехов: " << new_cs.active_rooms << endl;
+				}
+				if (user_choice == 1)
+				{
+					new_cs.active_rooms++;
+					cout << "Колл-во работающих цехов: " << new_cs.active_rooms << endl;
+				}
+				if (user_choice == 2)
+				{
+					break;
+				}
+				if (new_cs.active_rooms > new_cs.rooms)
+				{
+					cout << "Колличество работающих цехов не может превышать колличество всего цехов на КС.\n";
+					cout << "Последние изменения не будут применены.\n\n";
+					new_cs.active_rooms--;
+					cout << "Колл-во работающих цехов: " << new_cs.active_rooms << endl;
+					break;
+				}
+				if (new_cs.active_rooms < 0)
+				{
+					cout << "Колличество работающих цехов не может быть отрицательным.\n";
+					cout << "Последние изменения не будут применены.\n\n";
+					new_cs.active_rooms++;
+					cout << "Колл-во работающих цехов: " << new_cs.active_rooms << endl;
+					break;
+				}
 			}
-			if (user_choice == 1)
+			else 
 			{
-				new_cs.active_rooms++;
-			}
-			if (user_choice == 2)
-			{
-				break;
-			}
-			if (new_cs.active_rooms > new_cs.rooms)
-			{
-				cout << "Колличество работающих цехов не может превышать колличество всего цехов на КС.\n";
-				cout << "Последние изменения не будут применены.\n\n";
-				new_cs.active_rooms--;
-				break;
-			}
-			if (new_cs.active_rooms < 0)
-			{
-				cout << "Колличество работающих цехов не может быть отрицательным.\n";
-				cout << "Последние изменения не будут применены.\n\n";
-				new_cs.active_rooms++;
-				break;
+				cout << "Введенные данные не корректны.\n";
 			}
 		}
+		cout << "Колличество работающих цехов на данный момент: " << new_cs.active_rooms << endl;
 		new_cs.saved = false;
 	}
 	else
@@ -247,6 +473,7 @@ void Save(tube& new_tube, cs& new_cs)
 		}
 		out.close();
 		new_tube.saved = true;
+		cout << "Данные по трубе сохранены\n\n";
 	}
 	if (new_cs.saved == false)
 	{
@@ -260,6 +487,17 @@ void Save(tube& new_tube, cs& new_cs)
 		}
 		out.close();
 		new_cs.saved = true;
+		cout << "Данные по КС сохранены\n\n";
+	}
+	if (new_tube.created == false)
+	{
+		cout << "Вы не создали ни одну трубу.\n";
+		cout << "Перейдите в пункт <1> главного меню для создания, или загрузите данные из файла\n\n";
+	}
+	if (new_cs.created == false)
+	{
+		cout << "Вы не создали ни одну КС.\n";
+		cout << "Перейдите в пункт <2> главного меню для создания, или загрузите данные из файла\n\n";
 	}
 }
 
@@ -334,19 +572,35 @@ void Download(tube& new_tube, cs& new_cs)
 
 int Menu(tube& new_tube, cs& new_cs)
 {
-	int user_choice;
+	string str;
+	int user_choice = 0;
 	cout << "1. Добавить трубу\n2. Добавить КС\n3. Просмотр всех объектов\n4. Редактировать трубу\n5. Редактировать КС\n6. Сохранить\n7. Загрузить\n0. Выход\n";
-	cin >> user_choice;
-	switch (user_choice)
+	cin >> str;
+	if (IsNumber(str))
 	{
+		user_choice = stoi(str);
+		switch (user_choice)
+		{
 		case 1:
 			system("cls");
-			CreateTube(new_tube);
+			for (;;)
+			{
+				if (CreateTube(new_tube) == 0)
+				{
+					break;
+				}
+			}
 			return 1;
 			break;
 		case 2:
 			system("cls");
-			CreateStation(new_cs);
+			for (;;)
+			{
+				if (CreateStation(new_cs) == 0)
+				{
+					break;
+				}
+			}
 			return 1;
 			break;
 		case 3:
@@ -355,8 +609,15 @@ int Menu(tube& new_tube, cs& new_cs)
 			return 1;
 			break;
 		case 4:
-			system("cls");
-			EditTube(new_tube);
+			system("cls"); 
+			cout << "------------ Редактирование Трубы ------------\n";
+			for (;;)
+			{
+				if (EditTube(new_tube) == 0)
+				{
+					break;
+				}
+			}
 			return 1;
 			break;
 		case 5:
@@ -378,7 +639,12 @@ int Menu(tube& new_tube, cs& new_cs)
 			return 0;
 			break;
 		default:
-			cout << "Введенные данные не корректны. Пожалуйста, укажите номер, интересующего вас пункта.\n";
+			cout << "Введенные данные не корректны. Пожалуйста, укажите номер интересующего вас пункта.\n\n";
+		}
+	}
+	else
+	{
+		cout << "Введенные данные не корректны. Пожалуйста, укажите номер интересующего вас пункта.\n\n";
 	}
 }
 
