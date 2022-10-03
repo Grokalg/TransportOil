@@ -25,6 +25,23 @@ struct cs
 	cs() {}
 };
 
+bool IsDoubleNumber(string str)
+{
+	int i;
+	for (i = 0; i < str.length(); i++)
+	{
+		if (isdigit(str[i]) or str[i] == ',')
+		{
+			continue;
+		}
+		else
+		{
+			return false;
+			break;
+		}
+	}
+}
+
 bool IsNumber(string str)
 {
 	int i;
@@ -57,9 +74,9 @@ int CreateTube(tube& new_tube)
 				float diameter, length;
 				while (true)
 				{
-					cout << "Введите длину: ";
+					cout << "Введите длину в метрах (используйте <,>): ";
 					cin >> str;
-					if (IsNumber(str))
+					if (IsDoubleNumber(str))
 					{
 						length = stof(str);
 						if (length <= 0)
@@ -77,9 +94,9 @@ int CreateTube(tube& new_tube)
 				}
 				while (true)
 				{
-					cout << "Введите диаметр: ";
+					cout << "Введите диаметр в метрах (используйте <,>): ";
 					cin >> str;
-					if (IsNumber(str))
+					if (IsDoubleNumber(str))
 					{
 						diameter = stof(str);
 						if (diameter == 0)
@@ -120,9 +137,9 @@ int CreateTube(tube& new_tube)
 		float diameter, length;
 		while (true)
 		{
-			cout << "Введите длину: ";
+			cout << "Введите длину в метрах (используйте <,>): ";
 			cin >> str;
-			if (IsNumber(str))
+			if (IsDoubleNumber(str))
 			{
 				length = stof(str);
 				if (length <= 0)
@@ -140,9 +157,9 @@ int CreateTube(tube& new_tube)
 		}
 		while (true)
 		{
-			cout << "Введите диаметр: ";
+			cout << "Введите диаметр в метрах (используйте <,>): ";
 			cin >> str;
-			if (IsNumber(str))
+			if (IsDoubleNumber(str))
 			{
 				diameter = stof(str);
 				if (diameter == 0)
@@ -503,9 +520,9 @@ void Save(tube& new_tube, cs& new_cs)
 
 void Download(tube& new_tube, cs& new_cs)
 {
-	cout << "--------------- Труба ---------------\n";
 	string line, current_word;
 	ifstream in("Tubes.txt");
+	int error_flag = 0; //Переменная отслеживает наличие ошибок при чтении файла
 	if (in.is_open())
 	{
 		while (in>>current_word)
@@ -514,29 +531,45 @@ void Download(tube& new_tube, cs& new_cs)
 			{
 				getline(in, line);
 				line.erase(remove(line.begin(), line.end(), ' '), line.end()); //https://ru.stackoverflow.com/questions/1071460/%D0%A3%D0%B4%D0%B0%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5-%D0%BF%D1%80%D0%BE%D0%B1%D0%B5%D0%BB%D0%BE%D0%B2-%D0%B8%D0%B7-%D1%81%D1%82%D1%80%D0%BE%D0%BA%D0%B8
-				new_tube.length = stod(line); //Преобразование строки в число https://arduinoplus.ru/preobrazovanie-stroki-string-v-czeloe-chislo-int-v-c/
+				if (IsDoubleNumber(line) and stod(line)>0)
+				{
+					new_tube.length = stod(line); //Преобразование строки в число https://arduinoplus.ru/preobrazovanie-stroki-string-v-czeloe-chislo-int-v-c/
+				}
+				else
+				{
+					error_flag = 1;
+				}
 			}
 			if (current_word == "Диаметр:")
 			{
 				getline(in, line);
 				line.erase(remove(line.begin(), line.end(), ' '), line.end());
-				new_tube.diameter = stod(line);
+				if (IsDoubleNumber(line) and stod(line) > 0)
+				{
+					new_tube.diameter = stod(line);
+				}
+				else
+				{
+					error_flag = 1;
+				}	
 			}
 			if (current_word == "Труба")
 			{
 				getline(in, line);
 				line.erase(remove(line.begin(), line.end(), ' '), line.end());
-				new_tube.condition = "Труба "+ line;
+				if (line == "исправна" or line == "в ремонте")
+				{
+					new_tube.condition = "Труба " + line;
+				}
+				else
+				{
+					error_flag = 1;
+				}
 			}			
 		}
 	}
 	in.close();
-	new_tube.saved = true;
-	new_tube.created = true;
-	cout << "Длина: " << new_tube.length << endl;
-	cout << "Диаметр: " << new_tube.diameter << endl;
-	cout << "Состояние: " << new_tube.condition << endl;
-	cout << "---------------- КС -----------------\n";
+	int rooms = 100;
 	ifstream inr("CS.txt");
 	if (inr.is_open())
 	{
@@ -546,28 +579,64 @@ void Download(tube& new_tube, cs& new_cs)
 			{
 				getline(inr, line);
 				line.erase(remove(line.begin(), line.end(), ' '), line.end()); //https://ru.stackoverflow.com/questions/1071460/%D0%A3%D0%B4%D0%B0%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5-%D0%BF%D1%80%D0%BE%D0%B1%D0%B5%D0%BB%D0%BE%D0%B2-%D0%B8%D0%B7-%D1%81%D1%82%D1%80%D0%BE%D0%BA%D0%B8
-				new_cs.rooms = stoi(line); //Преобразование строки в число https://arduinoplus.ru/preobrazovanie-stroki-string-v-czeloe-chislo-int-v-c/
+				if (IsNumber(line) and stoi(line) > 0)
+				{
+					rooms = stoi(line);
+				}
+				else
+				{
+					error_flag = 1;
+				}
 			}
 			if (current_word == "работе:")
 			{
 				getline(inr, line);
 				line.erase(remove(line.begin(), line.end(), ' '), line.end());
-				new_cs.active_rooms = stoi(line);
+				if (IsNumber(line) and stoi(line) <= rooms)
+				{
+					new_cs.active_rooms = stoi(line);
+					new_cs.rooms = rooms;
+				}
+				else
+				{
+					error_flag = 1;
+				}
 			}
 			if (current_word == "Эффективность:")
 			{
 				getline(inr, line);
 				line.erase(remove(line.begin(), line.end(), ' '), line.end());
-				new_cs.efficiency = stoi(line);
+				if (IsNumber(line) and stoi(line) <= 5 and stoi(line) > 0)
+				{
+					new_cs.efficiency = stoi(line);
+				}
+				else
+				{
+					error_flag = 1;
+				}
 			}
 		}
 	}
 	inr.close();
-	new_cs.saved = true;
-	new_cs.created = true;
-	cout << "Всего цехов: " << new_cs.rooms << endl;
-	cout << "Цехов в работе: " << new_cs.active_rooms << endl;
-	cout << "Эффективность: " << new_cs.efficiency << "\n\n";
+	if (error_flag == 1)
+	{
+		cout << "Ошибка при чтении файла. Проверьте корректность данных.\n";
+	}
+	else
+	{
+		cout << "--------------- Труба ---------------\n";
+		cout << "Длина: " << new_tube.length << endl;
+		cout << "Диаметр: " << new_tube.diameter << endl;
+		cout << "Состояние: " << new_tube.condition << endl;
+		new_tube.saved = true;
+		new_tube.created = true;
+		cout << "---------------- КС -----------------\n";
+		cout << "Всего цехов: " << new_cs.rooms << endl;
+		cout << "Цехов в работе: " << new_cs.active_rooms << endl;
+		cout << "Эффективность: " << new_cs.efficiency << "\n\n";
+		new_cs.saved = true;
+		new_cs.created = true;
+	}
 }
 
 int Menu(tube& new_tube, cs& new_cs)
