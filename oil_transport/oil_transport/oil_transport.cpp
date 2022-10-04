@@ -28,17 +28,24 @@ struct cs
 bool IsDoubleNumber(string str)
 {
 	int i;
-	for (i = 0; i < str.length(); i++)
+	if (str[0] != ',' and str[str.length()-1] != ',')
 	{
-		if (isdigit(str[i]) or str[i] == ',')
+		for (i = 0; i < str.length(); i++)
 		{
-			continue;
+			if (isdigit(str[i]) or str[i] == ',')
+			{
+				continue;
+			}
+			else
+			{
+				return false;
+				break;
+			}
 		}
-		else
-		{
-			return false;
-			break;
-		}
+	}
+	else
+	{
+		return false;
 	}
 }
 
@@ -53,6 +60,19 @@ bool IsNumber(string str)
 			break;
 		}
 	}
+}
+
+string CommaSubstitution(string str)
+{
+	int i;
+	for (i = 0; i < str.length(); i++)
+	{
+		if (str[i] == '.')
+		{
+			str[i] = ',';
+		}
+	}
+	return str;
 }
 
 int CreateTube(tube& new_tube)
@@ -71,14 +91,14 @@ int CreateTube(tube& new_tube)
 			switch (user_choice)
 			{
 			case 1:
-				float diameter, length;
+				double diameter, length;
 				while (true)
 				{
 					cout << "Введите длину в метрах (используйте <,>): ";
 					cin >> str;
 					if (IsDoubleNumber(str))
 					{
-						length = stof(str);
+						length = stod(str);
 						if (length <= 0)
 						{
 							cout << "Длина трубы не может быть отрицательной или 0. Введите данные повторно.\n";
@@ -98,7 +118,7 @@ int CreateTube(tube& new_tube)
 					cin >> str;
 					if (IsDoubleNumber(str))
 					{
-						diameter = stof(str);
+						diameter = stod(str);
 						if (diameter == 0)
 						{
 							cout << "Диаметр трубы не может составлять 0 м. Введите данные повторно:\n";
@@ -134,14 +154,14 @@ int CreateTube(tube& new_tube)
 	else
 	{
 		string str;
-		float diameter, length;
+		double diameter, length;
 		while (true)
 		{
 			cout << "Введите длину в метрах (используйте <,>): ";
 			cin >> str;
 			if (IsDoubleNumber(str))
 			{
-				length = stof(str);
+				length = stod(str);
 				if (length <= 0)
 				{
 					cout << "Длина трубы не может быть отрицательной или 0. Введите данные повторно.\n";
@@ -161,7 +181,7 @@ int CreateTube(tube& new_tube)
 			cin >> str;
 			if (IsDoubleNumber(str))
 			{
-				diameter = stof(str);
+				diameter = stod(str);
 				if (diameter == 0)
 				{
 					cout << "Диаметр трубы не может составлять 0 м. Введите данные повторно:\n";
@@ -531,6 +551,7 @@ void Download(tube& new_tube, cs& new_cs)
 			{
 				getline(in, line);
 				line.erase(remove(line.begin(), line.end(), ' '), line.end()); //https://ru.stackoverflow.com/questions/1071460/%D0%A3%D0%B4%D0%B0%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5-%D0%BF%D1%80%D0%BE%D0%B1%D0%B5%D0%BB%D0%BE%D0%B2-%D0%B8%D0%B7-%D1%81%D1%82%D1%80%D0%BE%D0%BA%D0%B8
+				line = CommaSubstitution(line);
 				if (IsDoubleNumber(line) and stod(line)>0)
 				{
 					new_tube.length = stod(line); //Преобразование строки в число https://arduinoplus.ru/preobrazovanie-stroki-string-v-czeloe-chislo-int-v-c/
@@ -544,6 +565,7 @@ void Download(tube& new_tube, cs& new_cs)
 			{
 				getline(in, line);
 				line.erase(remove(line.begin(), line.end(), ' '), line.end());
+				line = CommaSubstitution(line);
 				if (IsDoubleNumber(line) and stod(line) > 0)
 				{
 					new_tube.diameter = stod(line);
