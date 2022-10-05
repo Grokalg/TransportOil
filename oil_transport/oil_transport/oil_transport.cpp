@@ -58,7 +58,6 @@ bool IsNumber(string str)
 		if (!isdigit(str[i]))
 		{
 			return false;
-			break;
 		}
 	}
 	return true;
@@ -117,7 +116,7 @@ int UserInputInt()
 	return(stoi(str));
 }
 
-int InputActiveRooms(int rooms)
+int InputActiveRooms(cs& new_cs)
 {
 	string str;
 	int active_rooms;
@@ -127,7 +126,7 @@ int InputActiveRooms(int rooms)
 		if (IsNumber(str))
 		{
 			active_rooms = stoi(str);
-			if (stoi(str) > rooms)
+			if (stoi(str) > new_cs.rooms)
 			{
 				cout << "Колличество работающих цехов не может превыщать колличество всего цехов на КС. Введите число работающих цехов:\n";
 				continue;
@@ -187,16 +186,12 @@ void TubeInput(tube& new_tube)
 
 void CsInput(cs& new_cs)
 {
-	int rooms, active_rooms, efficiency;
 	cout << "Укажите количество цехов: ";
-	rooms = UserInputInt();
+	new_cs.rooms = UserInputInt();
 	cout << "Укажите количество работающих цехов: ";
-	active_rooms = InputActiveRooms(rooms);
+	new_cs.active_rooms = InputActiveRooms(new_cs);
 	cout << "Введите значение эффективности (от 1 до 5): ";
-	efficiency = InputEfficiency();
-	new_cs.rooms = rooms;
-	new_cs.active_rooms = active_rooms;
-	new_cs.efficiency = efficiency;
+	new_cs.efficiency = InputEfficiency();
 	new_cs.saved = false;
 	new_cs.created = true;
 }
@@ -601,46 +596,32 @@ int Menu(tube& new_tube, cs& new_cs)
 	if (IsNumber(str))
 	{
 		user_choice = stoi(str);
+		system("cls");
 		switch (user_choice)
 		{
 		case 1:
-			system("cls");
 			CreateTube(new_tube);
 			return 1;
-			break;
 		case 2:
-			system("cls");
 			CreateStation(new_cs);
 			return 1;
-			break;
 		case 3:
-			system("cls");
 			ViewAllObjects(new_tube, new_cs);
 			return 1;
-			break;
 		case 4:
-			system("cls"); 
 			EditTube(new_tube);
 			return 1;
-			break;
 		case 5:
-			system("cls");
 			EditStation(new_cs);
 			return 1;
-			break;
 		case 6:
-			system("cls");
 			Save(new_tube, new_cs);
 			return 1;
-			break;
 		case 7:
-			system("cls");
 			Download(new_tube, new_cs);
 			return 1;
-			break;
 		case 0:
 			return 0;
-			break;
 		default:
 			cout << "Введенные данные не корректны. Пожалуйста, укажите номер интересующего вас пункта.\n\n";
 			return 1;
@@ -652,7 +633,6 @@ int Menu(tube& new_tube, cs& new_cs)
 		return 1;
 	}
 }
-
 
 int main()
 {
