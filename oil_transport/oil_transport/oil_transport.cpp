@@ -47,6 +47,7 @@ bool IsDoubleNumber(string str)
 	{
 		return false;
 	}
+	return true;
 }
 
 bool IsNumber(string str)
@@ -60,6 +61,7 @@ bool IsNumber(string str)
 			break;
 		}
 	}
+	return true;
 }
 
 string CommaSubstitution(string str)
@@ -93,6 +95,14 @@ double UserInputDouble()
 
 int UserInputInt()
 {
+	//int rooms;
+	//do
+	//{
+	//	cin.clear();
+	//	cin.ignore();
+	//	cin >> rooms;
+	//} while (cin.fail());
+	//return rooms;
 	string str;
 	while (true)
 	{
@@ -248,12 +258,186 @@ void CsOverwriting(cs& new_cs)
 				cout << "Введенные данные не корректны.\n";
 				break;
 			}
+			break;
 		}
 		else
 		{
 			cout << "Введенные данные не корректны.\n";
 		}
 	}
+}
+
+int CorrectChoice()
+{
+	int user_choice;
+	do
+	{
+		cin.clear();
+		cin.ignore();
+		cin >> user_choice;
+	} while (cin.fail() || user_choice < 0 || user_choice > 1);
+	return user_choice;
+}
+
+void CheckTransformationError(cs& new_cs, int rooms, int active_rooms)
+{
+	if (active_rooms > rooms)
+	{
+		cout << "Колличество работающих цехов не может превышать колличество всего цехов на КС.\n";
+		cout << "Последние изменения не будут применены.\n\n";
+		new_cs.active_rooms--;
+	}
+	if (active_rooms < 0)
+	{
+		cout << "Колличество работающих цехов не может быть отрицательным.\n";
+		cout << "Последние изменения не будут применены.\n\n";
+		new_cs.active_rooms++;
+	}
+}
+
+void CreatedCheck(tube new_tube, cs new_cs)
+{
+	if (new_tube.created == false)
+	{
+		cout << "Вы не создали ни одну трубу.\n";
+		cout << "Перейдите в пункт <1> главного меню для создания, или загрузите данные из файла\n\n";
+	}
+	if (new_cs.created == false)
+	{
+		cout << "Вы не создали ни одну КС.\n";
+		cout << "Перейдите в пункт <2> главного меню для создания, или загрузите данные из файла\n\n";
+	}
+}
+
+void StatusMessage(tube& new_tube, cs& new_cs, int error_flag)
+{
+	if (error_flag == 1)
+	{
+		cout << "Ошибка при чтении файла. Проверьте корректность данных.\n";
+	}
+	else
+	{
+		cout << "--------------- Труба ---------------\n";
+		cout << "Длина: " << new_tube.length << endl;
+		cout << "Диаметр: " << new_tube.diameter << endl;
+		cout << "Состояние: " << new_tube.condition << endl;
+		new_tube.saved = true;
+		new_tube.created = true;
+		cout << "---------------- КС -----------------\n";
+		cout << "Всего цехов: " << new_cs.rooms << endl;
+		cout << "Цехов в работе: " << new_cs.active_rooms << endl;
+		cout << "Эффективность: " << new_cs.efficiency << "\n\n";
+		new_cs.saved = true;
+		new_cs.created = true;
+	}
+}
+
+void TubeDownload(tube& new_tube, int& error_flag)
+{
+	string line, current_word;
+	ifstream in("Tubes.txt");
+	if (in.is_open())
+	{
+		while (in >> current_word)
+		{
+			if (current_word == "Длина:")
+			{
+				getline(in, line);
+				line.erase(remove(line.begin(), line.end(), ' '), line.end()); //https://ru.stackoverflow.com/questions/1071460/%D0%A3%D0%B4%D0%B0%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5-%D0%BF%D1%80%D0%BE%D0%B1%D0%B5%D0%BB%D0%BE%D0%B2-%D0%B8%D0%B7-%D1%81%D1%82%D1%80%D0%BE%D0%BA%D0%B8
+				line = CommaSubstitution(line);
+				if (IsDoubleNumber(line) and stod(line) > 0)
+				{
+					new_tube.length = stod(line);
+				}
+				else
+				{
+					error_flag = 1;
+				}
+			}
+			if (current_word == "Диаметр:")
+			{
+				getline(in, line);
+				line.erase(remove(line.begin(), line.end(), ' '), line.end());
+				line = CommaSubstitution(line);
+				if (IsDoubleNumber(line) and stod(line) > 0)
+				{
+					new_tube.diameter = stod(line);
+				}
+				else
+				{
+					error_flag = 1;
+				}
+			}
+			if (current_word == "Труба")
+			{
+				getline(in, line);
+				line.erase(remove(line.begin(), line.end(), ' '), line.end());
+				if (line == "исправна" or line == "в ремонте")
+				{
+					new_tube.condition = "Труба " + line;
+				}
+				else
+				{
+					error_flag = 1;
+				}
+			}
+		}
+	}
+	in.close();
+}
+
+void CsDownload(cs& new_cs, int& error_flag)
+{
+	string line, current_word;
+	int rooms;
+	ifstream inr("CS.txt");
+	if (inr.is_open())
+	{
+		while (inr >> current_word)
+		{
+			if (current_word == "цехов:")
+			{
+				getline(inr, line);
+				line.erase(remove(line.begin(), line.end(), ' '), line.end()); //https://ru.stackoverflow.com/questions/1071460/%D0%A3%D0%B4%D0%B0%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5-%D0%BF%D1%80%D0%BE%D0%B1%D0%B5%D0%BB%D0%BE%D0%B2-%D0%B8%D0%B7-%D1%81%D1%82%D1%80%D0%BE%D0%BA%D0%B8
+				if (IsNumber(line) and stoi(line) > 0)
+				{
+					rooms = stoi(line);
+				}
+				else
+				{
+					error_flag = 1;
+				}
+			}
+			if (current_word == "работе:")
+			{
+				getline(inr, line);
+				line.erase(remove(line.begin(), line.end(), ' '), line.end());
+				if (IsNumber(line))
+				{
+					new_cs.active_rooms = stoi(line);
+					new_cs.rooms = rooms;
+				}
+				else
+				{
+					error_flag = 1;
+				}
+			}
+			if (current_word == "Эффективность:")
+			{
+				getline(inr, line);
+				line.erase(remove(line.begin(), line.end(), ' '), line.end());
+				if (IsNumber(line) and stoi(line) <= 5 and stoi(line) > 0)
+				{
+					new_cs.efficiency = stoi(line);
+				}
+				else
+				{
+					error_flag = 1;
+				}
+			}
+		}
+	}
+	inr.close();
 }
 
 void CreateTube(tube& new_tube)
@@ -268,7 +452,7 @@ void CreateTube(tube& new_tube)
 	}
 }
 
-int CreateStation(cs& new_cs)
+void CreateStation(cs& new_cs)
 {
 	if (new_cs.created == true)
 	{
@@ -277,7 +461,6 @@ int CreateStation(cs& new_cs)
 	else
 	{
 		CsInput(new_cs);
-		return 0;
 	}
 }
 
@@ -307,42 +490,33 @@ void ViewAllObjects(tube& new_tube, cs& new_cs)
 	}
 }
 
-int EditTube(tube& new_tube)
+void EditTube(tube& new_tube)
 {
 	if (new_tube.created == true)
 	{
 		int user_choice;
-		string str;
+		cout << "------------ Редактирование Трубы ------------\n";
 		cout << "Введите значение состояния:\n";
 		cout << "<0> - Труба исправна  <1> - Труба в ремонте\n";
-		cin >> str;
-		if (IsNumber(str))
+		user_choice = CorrectChoice();
+		switch (user_choice)
 		{
-			user_choice = stoi(str);
-			switch (user_choice)
-			{
-			case 1:
-				new_tube.condition = "Труба в ремонте";
-				new_tube.saved = false;
-				return 0;
-			case 0:
-				new_tube.condition = "Труба исправна";
-				new_tube.saved = false;
-				return 0;
-			default:
-				cout << "Введенные данные не корректны.\n";
-				break;
-			}
-		}
-		else
-		{
+		case 1:
+			new_tube.condition = "Труба в ремонте";
+			new_tube.saved = false;
+			break;
+		case 0:
+			new_tube.condition = "Труба исправна";
+			new_tube.saved = false;
+			break;
+		default:
 			cout << "Введенные данные не корректны.\n";
+			break;
 		}
 	}
 	else
 	{
 		cout << "Труба ещё не создана.\n";
-		return 0;
 	}
 }
 
@@ -350,55 +524,26 @@ void EditStation(cs& new_cs)
 {
 	if (new_cs.created == true)
 	{
-		string str;
-		int user_choice = 3;
+		int user_choice;
 		cout << "------------ Редактирование КС ------------\n";
 		cout << "Колличество работающих цехов на данный момент: " << new_cs.active_rooms << endl;
-		cout << "<0> - Убрать активный цех, <1> - Добавить активный цех, <2> - Закончить редактирование\n";
-		for (;;)
+		cout << "<0> - Убрать активный цех, <1> - Добавить активный цех\n";
+		user_choice = CorrectChoice();
+		switch (user_choice)
 		{
-			cin >> str;
-			if (IsNumber(str) and stoi(str)>=0 and stoi(str)<=2)
-			{
-				user_choice = stoi(str);
-				if (user_choice == 0)
-				{
-					new_cs.active_rooms--;
-					cout << "Колл-во работающих цехов: " << new_cs.active_rooms << endl;
-				}
-				if (user_choice == 1)
-				{
-					new_cs.active_rooms++;
-					cout << "Колл-во работающих цехов: " << new_cs.active_rooms << endl;
-				}
-				if (user_choice == 2)
-				{
-					break;
-				}
-				if (new_cs.active_rooms > new_cs.rooms)
-				{
-					cout << "Колличество работающих цехов не может превышать колличество всего цехов на КС.\n";
-					cout << "Последние изменения не будут применены.\n\n";
-					new_cs.active_rooms--;
-					cout << "Колл-во работающих цехов: " << new_cs.active_rooms << endl;
-					break;
-				}
-				if (new_cs.active_rooms < 0)
-				{
-					cout << "Колличество работающих цехов не может быть отрицательным.\n";
-					cout << "Последние изменения не будут применены.\n\n";
-					new_cs.active_rooms++;
-					cout << "Колл-во работающих цехов: " << new_cs.active_rooms << endl;
-					break;
-				}
-			}
-			else 
-			{
-				cout << "Введенные данные не корректны.\n";
-			}
+		case 1:
+			new_cs.active_rooms++;
+			CheckTransformationError(new_cs, new_cs.rooms, new_cs.active_rooms);
+			cout << "Колл-во работающих цехов: " << new_cs.active_rooms << endl;
+			break;
+		case 0:
+			new_cs.active_rooms--;
+			CheckTransformationError(new_cs, new_cs.rooms, new_cs.active_rooms);
+			cout << "Колл-во работающих цехов: " << new_cs.active_rooms << endl;
+			break;
+		default:
+			break;
 		}
-		cout << "Колличество работающих цехов на данный момент: " << new_cs.active_rooms << endl;
-		new_cs.saved = false;
 	}
 	else
 	{
@@ -408,6 +553,7 @@ void EditStation(cs& new_cs)
 
 void Save(tube& new_tube, cs& new_cs)
 {
+	CreatedCheck(new_tube, new_cs);
 	if (new_tube.saved == false)
 	{
 		ofstream out("Tubes.txt");
@@ -436,139 +582,14 @@ void Save(tube& new_tube, cs& new_cs)
 		new_cs.saved = true;
 		cout << "Данные по КС сохранены\n\n";
 	}
-	if (new_tube.created == false)
-	{
-		cout << "Вы не создали ни одну трубу.\n";
-		cout << "Перейдите в пункт <1> главного меню для создания, или загрузите данные из файла\n\n";
-	}
-	if (new_cs.created == false)
-	{
-		cout << "Вы не создали ни одну КС.\n";
-		cout << "Перейдите в пункт <2> главного меню для создания, или загрузите данные из файла\n\n";
-	}
 }
 
 void Download(tube& new_tube, cs& new_cs)
 {
-	string line, current_word;
-	ifstream in("Tubes.txt");
-	int error_flag = 0; //Переменная отслеживает наличие ошибок при чтении файла
-	if (in.is_open())
-	{
-		while (in>>current_word)
-		{
-			if (current_word == "Длина:")
-			{
-				getline(in, line);
-				line.erase(remove(line.begin(), line.end(), ' '), line.end()); //https://ru.stackoverflow.com/questions/1071460/%D0%A3%D0%B4%D0%B0%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5-%D0%BF%D1%80%D0%BE%D0%B1%D0%B5%D0%BB%D0%BE%D0%B2-%D0%B8%D0%B7-%D1%81%D1%82%D1%80%D0%BE%D0%BA%D0%B8
-				line = CommaSubstitution(line);
-				if (IsDoubleNumber(line) and stod(line)>0)
-				{
-					new_tube.length = stod(line); //Преобразование строки в число https://arduinoplus.ru/preobrazovanie-stroki-string-v-czeloe-chislo-int-v-c/
-				}
-				else
-				{
-					error_flag = 1;
-				}
-			}
-			if (current_word == "Диаметр:")
-			{
-				getline(in, line);
-				line.erase(remove(line.begin(), line.end(), ' '), line.end());
-				line = CommaSubstitution(line);
-				if (IsDoubleNumber(line) and stod(line) > 0)
-				{
-					new_tube.diameter = stod(line);
-				}
-				else
-				{
-					error_flag = 1;
-				}	
-			}
-			if (current_word == "Труба")
-			{
-				getline(in, line);
-				line.erase(remove(line.begin(), line.end(), ' '), line.end());
-				if (line == "исправна" or line == "в ремонте")
-				{
-					new_tube.condition = "Труба " + line;
-				}
-				else
-				{
-					error_flag = 1;
-				}
-			}			
-		}
-	}
-	in.close();
-	int rooms = 100;
-	ifstream inr("CS.txt");
-	if (inr.is_open())
-	{
-		while (inr >> current_word)
-		{
-			if (current_word == "цехов:")
-			{
-				getline(inr, line);
-				line.erase(remove(line.begin(), line.end(), ' '), line.end()); //https://ru.stackoverflow.com/questions/1071460/%D0%A3%D0%B4%D0%B0%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5-%D0%BF%D1%80%D0%BE%D0%B1%D0%B5%D0%BB%D0%BE%D0%B2-%D0%B8%D0%B7-%D1%81%D1%82%D1%80%D0%BE%D0%BA%D0%B8
-				if (IsNumber(line) and stoi(line) > 0)
-				{
-					rooms = stoi(line);
-				}
-				else
-				{
-					error_flag = 1;
-				}
-			}
-			if (current_word == "работе:")
-			{
-				getline(inr, line);
-				line.erase(remove(line.begin(), line.end(), ' '), line.end());
-				if (IsNumber(line) and stoi(line) <= rooms)
-				{
-					new_cs.active_rooms = stoi(line);
-					new_cs.rooms = rooms;
-				}
-				else
-				{
-					error_flag = 1;
-				}
-			}
-			if (current_word == "Эффективность:")
-			{
-				getline(inr, line);
-				line.erase(remove(line.begin(), line.end(), ' '), line.end());
-				if (IsNumber(line) and stoi(line) <= 5 and stoi(line) > 0)
-				{
-					new_cs.efficiency = stoi(line);
-				}
-				else
-				{
-					error_flag = 1;
-				}
-			}
-		}
-	}
-	inr.close();
-	if (error_flag == 1)
-	{
-		cout << "Ошибка при чтении файла. Проверьте корректность данных.\n";
-	}
-	else
-	{
-		cout << "--------------- Труба ---------------\n";
-		cout << "Длина: " << new_tube.length << endl;
-		cout << "Диаметр: " << new_tube.diameter << endl;
-		cout << "Состояние: " << new_tube.condition << endl;
-		new_tube.saved = true;
-		new_tube.created = true;
-		cout << "---------------- КС -----------------\n";
-		cout << "Всего цехов: " << new_cs.rooms << endl;
-		cout << "Цехов в работе: " << new_cs.active_rooms << endl;
-		cout << "Эффективность: " << new_cs.efficiency << "\n\n";
-		new_cs.saved = true;
-		new_cs.created = true;
-	}
+	int error_flag;
+	TubeDownload(new_tube, error_flag);
+	CsDownload(new_cs, error_flag);
+	StatusMessage(new_tube, new_cs, error_flag);
 }
 
 int Menu(tube& new_tube, cs& new_cs)
@@ -589,13 +610,7 @@ int Menu(tube& new_tube, cs& new_cs)
 			break;
 		case 2:
 			system("cls");
-			for (;;)
-			{
-				if (CreateStation(new_cs) == 0)
-				{
-					break;
-				}
-			}
+			CreateStation(new_cs);
 			return 1;
 			break;
 		case 3:
@@ -605,14 +620,7 @@ int Menu(tube& new_tube, cs& new_cs)
 			break;
 		case 4:
 			system("cls"); 
-			cout << "------------ Редактирование Трубы ------------\n";
-			for (;;)
-			{
-				if (EditTube(new_tube) == 0)
-				{
-					break;
-				}
-			}
+			EditTube(new_tube);
 			return 1;
 			break;
 		case 5:
@@ -635,11 +643,13 @@ int Menu(tube& new_tube, cs& new_cs)
 			break;
 		default:
 			cout << "Введенные данные не корректны. Пожалуйста, укажите номер интересующего вас пункта.\n\n";
+			return 1;
 		}
 	}
 	else
 	{
 		cout << "Введенные данные не корректны. Пожалуйста, укажите номер интересующего вас пункта.\n\n";
+		return 1;
 	}
 }
 
