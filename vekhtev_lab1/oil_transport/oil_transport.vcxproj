@@ -128,7 +128,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CCs.cpp" />
+    <ClCompile Include="CTube.cpp" />
     <ClCompile Include="oil_transport.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CCs.h" />
+    <ClInclude Include="CTube.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
